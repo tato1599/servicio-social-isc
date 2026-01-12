@@ -1,59 +1,106 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
 
-## About Laravel
+# 🏫 Sistema de Gestión de Horarios Multi-Departamento
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Este proyecto es una solución integral desarrollada en **Laravel 12** para la asignación automatizada de salones y horarios, optimizando la logística académica entre distintos departamentos.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🛠️ Tecnologías Utilizadas
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+El proyecto está construido bajo el **TALL Stack**:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+* **Framework:** [Laravel 12](https://laravel.com/)
+* **Frontend Interactivo:** [Livewire 3](https://livewire.laravel.com/)
+* **Estilos:** [Tailwind CSS](https://tailwindcss.com/)
+* **Autenticación y Perfiles:** [Laravel Jetstream](https://jetstream.laravel.com/) (Livewire Stack)
+* **Base de Datos:** Postgres
+* **Pruebas:** Pest PHP
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 🚀 Guía de Instalación
 
-### Premium Partners
+Sigue estos pasos para replicar el entorno de desarrollo localmente.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 1. Clonar el repositorio
+```bash
+git clone https://github.com/tato1599/servicio-social-isc.git
+cd servicio-social-isc
 
-## Contributing
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 2. Instalar dependencias de PHP
 
-## Code of Conduct
+```bash
+composer install
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```
 
-## Security Vulnerabilities
+### 3. Instalar dependencias de Frontend
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+npm install
+npm run build
 
-## License
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 4. Configuración del entorno
+
+Copia el archivo de ejemplo y genera la llave de la aplicación:
+
+```bash
+cp .env.example .env
+php artisan key:generate
+
+```
+
+### 5. Configurar la Base de Datos
+
+Edita tu archivo `.env` con las credenciales de tu base de datos local:
+
+```env
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=nombre_de_tu_db
+DB_USERNAME=tu_usuario
+DB_PASSWORD=tu_contraseña
+
+```
+
+### 6. Ejecutar Migraciones y Seeders
+
+Este comando creará las tablas (incluyendo las de Jetstream y Departamentos) y cargará los datos iniciales si los tienes configurados:
+
+```bash
+php artisan migrate --seed
+
+```
+
+### 7. Iniciar el servidor
+
+```bash
+php artisan serve
+
+```
+
+La aplicación estará disponible en: `http://127.0.0.1:8000`
+
+---
+
+
+---
+
+## 🧪 Ejecución de Pruebas
+
+Para asegurar que las reglas de no traslape de horarios funcionen correctamente, ejecuta los tests con Pest:
+
+```bash
+php artisan test
+
+```
+
+---
+
