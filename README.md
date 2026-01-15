@@ -15,7 +15,7 @@ El proyecto está construido bajo el **TALL Stack**:
 * **Frontend Interactivo:** [Livewire 3](https://livewire.laravel.com/)
 * **Estilos:** [Tailwind CSS](https://tailwindcss.com/)
 * **Autenticación y Perfiles:** [Laravel Jetstream](https://jetstream.laravel.com/) (Livewire Stack)
-* **Base de Datos:** Postgres
+* **Base de Datos:** Postgresql
 * **Pruebas:** Pest PHP
 
 ---
