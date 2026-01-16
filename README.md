@@ -9,7 +9,7 @@ Este proyecto es una solución integral desarrollada en **Laravel 12** para la a
 
 ## 🛠️ Tecnologías Utilizadas
 
-El proyecto está construido bajo el **TALL Stack**:
+El proyecto está construido bajo el **Stack**:
 
 * **Framework:** [Laravel 12](https://laravel.com/)
 * **Frontend Interactivo:** [Livewire 3](https://livewire.laravel.com/)
