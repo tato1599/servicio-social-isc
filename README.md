@@ -95,7 +95,7 @@ La aplicación estará disponible en: `http://127.0.0.1:8000`
 
 ## 🧪 Ejecución de Pruebas
 
-Para asegurar que las reglas de no traslape de horarios funcionen correctamente, ejecuta los tests con Pest:
+Para asegurar que las reglas de no traslape de horarios funcionen correctamente y ademas el sistema no tenga conflictos con los modulos que se comunican entre si, ejecuta los tests con Pest :
 
 ```bash
 php artisan test
