@@ -1,5 +1,8 @@
 <?php
 
+use App\Livewire\Teachers\TeacherForm;
+use App\Livewire\Teachers\TeacherIndex;
+use App\Livewire\Teachers\TeacherShow;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -14,4 +17,13 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    // --- Módulo de Docentes ---
+    Route::prefix('teachers')->group(function () {
+        Route::get('/', TeacherIndex::class)->name('teachers.index');
+        Route::get('/create', TeacherForm::class)->name('teachers.create');
+        Route::get('/{teacher}/edit', TeacherForm::class)->name('teachers.edit');
+        Route::get('/{teacher}', TeacherShow::class)->name('teachers.show');
+    });
+
 });
