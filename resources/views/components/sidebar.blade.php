@@ -1,6 +1,7 @@
 <nav class="flex flex-col space-y-2 p-4 w-64 h-screen bg-white border-r overflow-y-auto">
     @foreach(config('sidebar.modules') as $module)
         @if(true)
+        {{-- Por el momento esto lo pueden ver todos, mas adelante se agregará control de permisos --}}
             <div>
                 <a href="{{ route($module['route']) }}"
                    class="flex items-center p-3 rounded-lg transition-colors {{ request()->is($module['active']) ? 'bg-blue-50 text-blue-600 font-bold' : 'text-gray-600 hover:bg-gray-100' }}">
