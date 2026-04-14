@@ -29,7 +29,7 @@
 
                     <div class="flex flex-col gap-2">
                         <label class="text-sm font-medium text-gray-700">Horas Semanales</label>
-                        <input type="number" wire:model ="weekly_hours" class="form-input rounded-lg border-gray-200" placeholder="Ej: 4">
+                        <input type="number" wire:model ="weekly_hours" class="form-input rounded-lg border-gray-200" placeholder="Ej: 5">
                         @error('weekly_hours') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
 

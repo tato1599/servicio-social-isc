@@ -64,7 +64,7 @@
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8 pt-6 border-t border-gray-100">
             <div class="p-4 rounded-lg bg-gray-50 border border-gray-100">
                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Horas Semanales</p>
-                <p class="text-2xl font-bold text-gray-900">{{ $stats['total_hours'] }} <span class="text-sm font-normal text-gray-400">hrs</span></p>
+                <p class="text-2xl font-bold text-gray-900">{{ $stats['total_hours'] }} <span class="text-sm font-normal text-gray-400">/ {{ $teacher->max_hours }} hrs (Min: {{ $teacher->min_hours }})</span></p>
             </div>
             <div class="p-4 rounded-lg bg-gray-50 border border-gray-100">
                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Materias</p>

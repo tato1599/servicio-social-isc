@@ -42,4 +42,11 @@ Route::middleware([
         Route::get('/create', \App\Livewire\Courses\CourseForm::class)->name('courses.create');
         Route::get('/{course}/edit', \App\Livewire\Courses\CourseForm::class)->name('courses.edit');
     });
+
+    // --- Módulo de Salones/Aulas ---
+    Route::prefix('classrooms')->group(function () {
+        Route::get('/', \App\Livewire\Classrooms\ClassroomIndex::class)->name('classrooms.index');
+        Route::get('/create', \App\Livewire\Classrooms\ClassroomForm::class)->name('classrooms.create');
+        Route::get('/{classroom}/edit', \App\Livewire\Classrooms\ClassroomForm::class)->name('classrooms.edit');
+    });
 });

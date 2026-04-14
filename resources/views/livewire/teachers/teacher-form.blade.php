@@ -51,7 +51,7 @@
                 </div>
 
                 <!-- Reglas de Horario -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-gray-50 rounded-lg">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 bg-gray-50 rounded-lg">
                     <div class="flex flex-col gap-2">
                         <label class="text-sm font-medium text-gray-700">Prioridad Administrativa</label>
                         <input type="number" wire:model ="priority" class="form-input rounded-lg border-gray-200" placeholder="0 = Normal, 10 = Alta">
@@ -60,9 +60,15 @@
                     </div>
 
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm font-medium text-gray-700">Límite de Horas Semanales</label>
-                        <input type="number" wire:model ="max_weekly_hours" class="form-input rounded-lg border-gray-200" placeholder="Ej: 40">
-                        @error('max_weekly_hours') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        <label class="text-sm font-medium text-gray-700">Mínimo de Horas</label>
+                        <input type="number" wire:model ="min_hours" class="form-input rounded-lg border-gray-200" placeholder="Ej: 0">
+                        @error('min_hours') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium text-gray-700">Límite Máximo de Horas</label>
+                        <input type="number" wire:model ="max_hours" class="form-input rounded-lg border-gray-200" placeholder="Ej: 40">
+                        @error('max_hours') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
                 </div>
 

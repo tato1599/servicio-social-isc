@@ -42,6 +42,41 @@
                     </div>
                 </div>
 
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium text-gray-700">Cantidad de Alumnos</label>
+                        <input type="number" wire:model="students_count" class="form-input rounded-lg border-gray-200 text-sm" placeholder="Ej: 30">
+                        @error('students_count') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium text-gray-700">Opciones JSON (Posibles)</label>
+                        <input type="text" wire:model="possible_slots" class="form-input rounded-lg border-gray-200 text-sm" placeholder='Ej: ["A","C"]'>
+                        @error('possible_slots') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium text-gray-700">Horario Final</label>
+                        <select wire:model="final_slot" class="form-select rounded-lg border-gray-200 text-sm">
+                            <option value="">Ninguno</option>
+                            @foreach (\App\Helpers\TimeSlotHelper::SLOTS as $slotKey => $slotData)
+                                <option value="{{ $slotKey }}">Bloque {{ $slotKey }}</option>
+                            @endforeach
+                        </select>
+                        @error('final_slot') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="text-sm font-medium text-gray-700">Estado del Curso</label>
+                        <select wire:model="status" class="form-select rounded-lg border-gray-200 text-sm">
+                            <option value="draft">Borrador</option>
+                            <option value="teacher_assigned">Maestro Asignado</option>
+                            <option value="published">Publicado</option>
+                        </select>
+                        @error('status') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
                 <!-- Detalle de Horario -->
                 <div class="flex flex-col gap-4">
                     <div class="flex justify-between items-center bg-gray-50 p-4 rounded-lg">

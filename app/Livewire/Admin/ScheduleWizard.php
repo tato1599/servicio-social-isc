@@ -25,17 +25,15 @@ class ScheduleWizard extends Component
     public $importedCourses = [];
     public $period = '';
 
-    // Paso 2: Maestros
-    public $teachers = [];
-    public $selectedTeachers = []; // Mapeo de course_id => teacher_id
+    // Paso 2: Configuración de final_slots
     public $coursesStep2 = [];
-
-    // Paso 3: Salones y Horarios
-    public $classrooms = [];
-    public $coursesStep3 = [];
-    // arrays dimensionados con course_id como key
     public $selectedFinalSlots = [];
-    public $selectedClassrooms = []; 
+
+    // Paso 3: Aulas (Arrastrar a cabeceras)
+    public $classrooms = [];
+
+    // Paso 4: Maestros (Arrastrar a celdas)
+    public $teachers = [];
 
     public function mount()
     {
@@ -61,9 +59,7 @@ class ScheduleWizard extends Component
         $filePath = $this->file->getRealPath();
 
         if (($handle = fopen($filePath, 'r')) !== false) {
-            // Ignorar encabezados
             $headers = fgetcsv($handle, 1000, ',');
-
             $deptISC = Department::firstOrCreate(['name' => 'Ingeniería en Sistemas Computacionales'], ['code' => 'ISC']);
 
             while (($row = fgetcsv($handle, 1000, ',')) !== false) {
@@ -71,26 +67,16 @@ class ScheduleWizard extends Component
                     continue;
                 }
 
-                $slots = [];
-                for ($i = 6; $i <= 10; $i++) {
-                    if (isset($row[$i]) && trim($row[$i]) !== '') {
-                        $cellSlots = preg_split('/\s+/', trim($row[$i]));
-                        foreach ($cellSlots as $s) {
-                            if (!empty($s) && preg_match('/^[A-O]$/i', $s)) {
-                                $slots[] = strtoupper($s);
-                            }
-                        }
-                    }
+                $groupsCount = is_numeric($row[5]) ? (int)$row[5] : 0;
+                if ($groupsCount <= 0) {
+                    continue;
                 }
-                
-                $slots = array_values(array_unique($slots));
 
                 $semester = (int)trim($row[0] ?? 0);
                 $subjectName = trim($row[1]);
                 $subjectCode = trim($row[2]);
                 $studentsCount = is_numeric($row[3]) ? (int)$row[3] : 0;
 
-                // Crear o actualizar materia
                 $subject = Subject::updateOrCreate(
                     ['code' => $subjectCode],
                     [
@@ -101,27 +87,42 @@ class ScheduleWizard extends Component
                     ]
                 );
 
-                // Crear o actualizar curso en estado 'draft'
-                $course = Course::updateOrCreate(
-                    [
-                        'subject_id' => $subject->id,
-                        'period' => $this->period,
-                        'group_code' => 'A' // asumiendo 'A' para todos los creados aqui
-                    ],
-                    [
-                        'students_count' => $studentsCount,
-                        'possible_slots' => empty($slots) ? null : json_encode($slots),
-                        'status' => 'draft'
-                    ]
-                );
+                for ($g = 0; $g < $groupsCount; $g++) {
+                    $groupCode = chr(65 + $g);
+                    $slotColumnIndex = 6 + $g;
+                    $rawSlot = $row[$slotColumnIndex] ?? '';
 
-                $this->previewData[] = [
-                    'course_id' => $course->id,
-                    'subject_name' => $subject->name,
-                    'subject_code' => $subject->code,
-                    'students' => $studentsCount,
-                    'slots' => implode(', ', $slots)
-                ];
+                    $slots = [];
+                    $cellSlots = preg_split('/\s+/', trim($rawSlot));
+                    foreach ($cellSlots as $s) {
+                        if (!empty($s) && preg_match('/^[A-O]$/i', $s)) {
+                            $slots[] = strtoupper($s);
+                        }
+                    }
+                    $slots = array_values(array_unique($slots));
+
+                    $course = Course::updateOrCreate(
+                        [
+                            'subject_id' => $subject->id,
+                            'period' => $this->period,
+                            'group_code' => $groupCode
+                        ],
+                        [
+                            'students_count' => $studentsCount,
+                            'possible_slots' => empty($slots) ? null : json_encode($slots),
+                            'status' => 'draft'
+                        ]
+                    );
+
+                    $this->previewData[] = [
+                        'course_id' => $course->id,
+                        'subject_name' => $subject->name,
+                        'subject_code' => $subject->code,
+                        'group' => $groupCode,
+                        'students' => $studentsCount,
+                        'slots' => empty($slots) ? 'POR DEFINIR' : implode(', ', $slots)
+                    ];
+                }
             }
             fclose($handle);
         }
@@ -136,122 +137,279 @@ class ScheduleWizard extends Component
         } elseif ($this->currentStep === 2) {
             $this->saveStep2();
             $this->loadStep3();
+        } elseif ($this->currentStep === 3) {
+            if ($this->getUnassignedClassroomCourses()->count() > 0) {
+                $this->dispatch('toast-error', message: 'Por favor, asigna salón a todos los cursos antes de avanzar.');
+                return;
+            }
+            $this->loadStep4();
         }
-        
+
         $this->currentStep++;
     }
 
     public function previousStep()
     {
         $this->currentStep--;
+        if ($this->currentStep === 2) {
+            $this->loadStep2();
+        } elseif ($this->currentStep === 3) {
+            $this->loadStep3();
+        }
     }
 
+    // --- PASO 2: CONFIRMAR HORARIOS ---
     public function loadStep2()
     {
-        $this->teachers = Teacher::orderBy('name')->get();
-        // Cargar cursos en draft o teacher_assigned
         $this->coursesStep2 = Course::with('subject')
             ->where('period', $this->period)
-            ->whereIn('status', ['draft', 'teacher_assigned'])
             ->get();
-
-        foreach ($this->coursesStep2 as $course) {
-            if ($course->teacher_id) {
-                $this->selectedTeachers[$course->id] = $course->teacher_id;
-            }
-        }
-    }
-
-    public function getTeacherWorkloadsProperty()
-    {
-        $workloads = [];
-        // Calcular cargas actuales con lo guardado en BD y sumarle el cambio en vivo (selectedTeachers)
-        $courses = Course::with('subject')->where('period', $this->period)->get();
-        
-        foreach ($this->teachers as $teacher) {
-            $workloads[$teacher->id] = [
-                'name' => $teacher->name,
-                'min' => $teacher->min_hours,
-                'max' => $teacher->max_hours,
-                'assigned' => 0
-            ];
-        }
-
-        foreach ($courses as $c) {
-            // El maestro final es el que esté modificado en UI, o el original si no está en UI, o si no se toca
-            $tid = isset($this->selectedTeachers[$c->id]) ? $this->selectedTeachers[$c->id] : $c->teacher_id;
             
-            if ($tid && isset($workloads[$tid]) && $c->subject) {
-                $workloads[$tid]['assigned'] += $c->subject->weekly_hours;
+        foreach ($this->coursesStep2 as $course) {
+            // Si el curso ya tiene final_slot de BD, cargarlo. Sino, pre-seleccionar el primer possible slot
+            $defaultSlot = null;
+            if ($course->possible_slots) {
+                $possible = json_decode($course->possible_slots, true);
+                $defaultSlot = !empty($possible) ? $possible[0] : null;
             }
+            $this->selectedFinalSlots[$course->id] = $course->final_slot ?? $defaultSlot;
         }
-
-        return $workloads;
     }
 
     public function saveStep2()
     {
-        foreach ($this->selectedTeachers as $courseId => $teacherId) {
-            if ($teacherId) {
+        foreach ($this->selectedFinalSlots as $courseId => $slot) {
+            if ($slot) {
                 Course::where('id', $courseId)->update([
-                    'teacher_id' => $teacherId,
-                    'status' => 'teacher_assigned'
+                    'final_slot' => $slot,
+                    'status' => 'teacher_assigned' // Subimos el estado para simular avance
                 ]);
             }
         }
     }
 
+    // --- PASO 3: SALONES ---
     public function loadStep3()
     {
         $this->classrooms = Classroom::orderBy('name')->get();
-        $this->coursesStep3 = Course::with(['subject', 'teacher'])
+    }
+
+    public function getUnassignedClassroomCourses()
+    {
+        return Course::with(['subject'])
             ->where('period', $this->period)
-            ->whereIn('status', ['teacher_assigned', 'published'])
+            ->whereNotNull('final_slot')
+            ->whereNull('requirement_classroom_id')
+            ->orderBy('final_slot')
+            ->get();
+    }
+
+    public function getMatrixStep3()
+    {
+        // Se construye la matriz para ver a los que sí han sido asignados
+        $assignedCourses = Course::with(['subject'])
+            ->where('period', $this->period)
+            ->whereNotNull('final_slot')
+            ->whereNotNull('requirement_classroom_id')
             ->get();
 
-        foreach ($this->coursesStep3 as $course) {
-            $this->selectedFinalSlots[$course->id] = $course->final_slot;
-            $this->selectedClassrooms[$course->id] = $course->requirement_classroom_id; // Se usa provisionalemente
+        $matrix = [];
+        foreach (\App\Helpers\TimeSlotHelper::SLOTS as $slotKey => $slotData) {
+            $matrix[$slotKey] = [];
+        }
+
+        foreach ($assignedCourses as $course) {
+            $cId = $course->requirement_classroom_id;
+            $slot = $course->final_slot;
+
+            $matrix[$slot][$cId] = [
+                'id' => $course->id,
+                'subject_name' => $course->subject->name ?? '',
+                'group' => $course->group_code,
+                'students_count' => $course->students_count
+            ];
+        }
+
+        return $matrix;
+    }
+
+    public function assignCourseToClassroom($courseId, $classroomId)
+    {
+        $course = Course::find($courseId);
+        if ($course && $course->final_slot) {
+            // Validate overlapping conflict
+            $conflict = Course::where('period', $this->period)
+                ->where('final_slot', $course->final_slot)
+                ->where('requirement_classroom_id', $classroomId)
+                ->where('id', '!=', $courseId)
+                ->exists();
+
+            if ($conflict) {
+                $this->dispatch('toast-error', message: 'El bloque ' . $course->final_slot . ' ya está ocupado en esta aula.');
+                return;
+            }
+
+            $course->update([
+                'requirement_classroom_id' => $classroomId
+            ]);
+            
+            // $this->dispatch('toast-success', message: 'Aula asignada correctamente'); // Obviamos toast verde por cada drop normal para no saturar al usuario, a menos que fallé.
         }
     }
 
+    public function removeCourseFromClassroom($courseId)
+    {
+        $course = Course::find($courseId);
+        if ($course) {
+            $course->update([
+                'requirement_classroom_id' => null,
+                'teacher_id' => null // reseteamos maestro x si acaso
+            ]);
+        }
+    }
+
+    // --- PASO 4: MAESTROS ---
+    public function loadStep4()
+    {
+        $this->classrooms = Classroom::orderBy('name')->get();
+    }
+
+    public function getTeachersWithLoad()
+    {
+        $teachers = Teacher::orderBy('name')->get();
+        $assignedCourses = Course::with('subject')
+            ->where('period', $this->period)
+            ->whereNotNull('teacher_id')
+            ->get();
+
+        $loads = $assignedCourses->groupBy('teacher_id')->map(function($teacherCourses) {
+            return $teacherCourses->sum(function($c) {
+                return $c->subject->weekly_hours ?? 5;
+            });
+        });
+
+        foreach($teachers as $teacher) {
+            $teacher->current_hours = $loads->get($teacher->id, 0);
+            
+            if ($teacher->current_hours > $teacher->max_hours) {
+                $teacher->status_color = 'bg-red-50 text-red-700 border-red-200';
+            } elseif ($teacher->current_hours < $teacher->min_hours) {
+                $teacher->status_color = 'bg-yellow-50 text-yellow-700 border-yellow-200';
+            } else {
+                $teacher->status_color = 'bg-green-50 text-green-700 border-green-200';
+            }
+        }
+
+        return $teachers;
+    }
+
+    public function getMatrixStep4()
+    {
+        $assignedCourses = Course::with(['subject', 'teacher'])
+            ->where('period', $this->period)
+            ->whereNotNull('final_slot')
+            ->whereNotNull('requirement_classroom_id')
+            ->get();
+
+        $matrix = [];
+        foreach (\App\Helpers\TimeSlotHelper::SLOTS as $slotKey => $slotData) {
+            $matrix[$slotKey] = [];
+        }
+
+        foreach ($assignedCourses as $course) {
+            $cId = $course->requirement_classroom_id;
+            $slot = $course->final_slot;
+
+            $matrix[$slot][$cId] = [
+                'id' => $course->id,
+                'subject_name' => $course->subject->name ?? '',
+                'group' => $course->group_code,
+                'teacher' => $course->teacher->name ?? null, // puede ser null
+                'students_count' => $course->students_count
+            ];
+        }
+
+        return $matrix;
+    }
+
+    public function assignTeacherToCourse($teacherId, $courseId)
+    {
+        $course = Course::find($courseId);
+        if ($course && $course->final_slot) {
+            // Validate: Teacher already scheduled at this slot
+            $conflict = Course::where('period', $this->period)
+                ->where('teacher_id', $teacherId)
+                ->where('final_slot', $course->final_slot)
+                ->where('id', '!=', $courseId)
+                ->exists();
+
+            if ($conflict) {
+                $this->dispatch('toast-error', message: 'El maestro ya imparte una clase en el bloque ' . $course->final_slot . '.');
+                return;
+            }
+
+            $course->update([
+                'teacher_id' => $teacherId
+            ]);
+        }
+    }
+
+    public function removeTeacherFromCourse($courseId)
+    {
+        $course = Course::find($courseId);
+        if ($course) {
+            $course->update([
+                'teacher_id' => null
+            ]);
+        }
+    }
+
+    // --- FIN Y PUBLICACIÓN ---
     public function publishSchedules()
     {
-        foreach ($this->coursesStep3 as $course) {
-            $finalSlot = $this->selectedFinalSlots[$course->id] ?? null;
-            $classroomId = $this->selectedClassrooms[$course->id] ?? null;
+        $unassignedTeachers = Course::where('period', $this->period)
+            ->whereNotNull('final_slot')
+            ->whereNotNull('requirement_classroom_id')
+            ->whereNull('teacher_id')
+            ->exists();
 
-            if ($finalSlot && $classroomId) {
-                // Actualizar info final en curso
-                $course->update([
-                    'final_slot' => $finalSlot,
-                    'requirement_classroom_id' => $classroomId,
-                    'status' => 'published'
-                ]);
+        if ($unassignedTeachers) {
+            $this->dispatch('toast-error', message: 'Falta asignar maestro a uno o más cursos confirmados.');
+            return;
+        }
 
-                // Generar los registros de Schedules!
-                // Limpiar previos
-                Schedule::where('course_id', $course->id)->delete();
+        $publishedCourses = Course::with(['subject'])
+            ->where('period', $this->period)
+            ->whereNotNull('final_slot')
+            ->whereNotNull('requirement_classroom_id')
+            ->get();
 
-                $times = TimeSlotHelper::getSlotTimes($finalSlot);
-                if ($times) {
-                    // Según las weekly_hours asignamos de lunes a X
-                    $days = min(5, $course->subject->weekly_hours); // maximo de Lunes a Sabado es 6, pero usaré maximo viernes 5
-                    for ($day = 1; $day <= $days; $day++) {
-                        Schedule::create([
-                            'course_id' => $course->id,
-                            'classroom_id' => $classroomId,
-                            'day_of_week' => $day,
-                            'start_time' => $times['start'],
-                            'end_time' => $times['end'],
-                        ]);
-                    }
+        foreach ($publishedCourses as $course) {
+            $finalSlot = $course->final_slot;
+            $classroomId = $course->requirement_classroom_id;
+
+            $course->update([
+                'status' => 'published'
+            ]);
+
+            Schedule::where('course_id', $course->id)->delete();
+
+            $times = TimeSlotHelper::getSlotTimes($finalSlot);
+            if ($times) {
+                $days = min(5, $course->subject->weekly_hours ?? 5);
+                for ($day = 1; $day <= $days; $day++) {
+                    Schedule::create([
+                        'course_id' => $course->id,
+                        'classroom_id' => $classroomId,
+                        'day_of_week' => $day,
+                        'start_time' => $times['start'],
+                        'end_time' => $times['end'],
+                    ]);
                 }
             }
         }
 
-        session()->flash('success', '¡Horarios publicados exitosamente!');
-        // Se puede reiniciar o ir al principio
+        $this->dispatch('toast-success', message: '¡Horarios publicados exitosamente!');
     }
 
     #[Layout('layouts.dashboard')]

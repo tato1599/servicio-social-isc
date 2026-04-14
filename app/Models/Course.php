@@ -17,6 +17,7 @@ class Course extends Model
         'requirement_slot',
         'requirement_classroom_id',
         'study_plan',
+        'students_count',
         'students_count_adjusted',
         'groups_count',
     ];

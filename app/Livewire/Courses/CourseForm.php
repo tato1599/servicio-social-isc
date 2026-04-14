@@ -19,14 +19,23 @@ class CourseForm extends Component
     public $group_code = 'A';
     public $period = 'Aug-Dec 2026';
 
+    public $students_count = 0;
+    public $status = 'draft';
+    public $possible_slots;
+    public $final_slot;
+
     // Para los slots de horario
     public $schedules_data = [];
 
     protected $rules = [
         'subject_id' => 'required|exists:subjects,id',
-        'teacher_id' => 'required|exists:teachers,id',
+        'teacher_id' => 'nullable|exists:teachers,id',
         'group_code' => 'required|string|max:10',
         'period' => 'required|string|max:50',
+        'students_count' => 'required|integer|min:0',
+        'status' => 'required|in:draft,teacher_assigned,published',
+        'possible_slots' => 'nullable|string',
+        'final_slot' => 'nullable|string',
     ];
 
     public function mount(Course $course = null)
@@ -37,6 +46,10 @@ class CourseForm extends Component
             $this->teacher_id = $course->teacher_id;
             $this->group_code = $course->group_code;
             $this->period = $course->period;
+            $this->students_count = $course->students_count;
+            $this->status = $course->status;
+            $this->possible_slots = $course->possible_slots;
+            $this->final_slot = $course->final_slot;
             
             $this->schedules_data = $course->schedules->map(fn($s) => [
                 'id' => $s->id,
@@ -70,9 +83,13 @@ class CourseForm extends Component
 
         $data = [
             'subject_id' => $this->subject_id,
-            'teacher_id' => $this->teacher_id,
+            'teacher_id' => $this->teacher_id ?: null,
             'group_code' => $this->group_code,
             'period' => $this->period,
+            'students_count' => $this->students_count,
+            'status' => $this->status,
+            'possible_slots' => $this->possible_slots,
+            'final_slot' => $this->final_slot,
         ];
 
         if ($this->course && $this->course->exists) {

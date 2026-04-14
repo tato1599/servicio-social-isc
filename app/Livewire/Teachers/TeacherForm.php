@@ -15,7 +15,8 @@ class TeacherForm extends Component
     public $employee_id;
     public $type = 'base';
     public $priority = 0;
-    public $max_weekly_hours;
+    public $min_hours = 0;
+    public $max_hours = 40;
     public $department_id;
 
     protected $rules = [
@@ -23,7 +24,8 @@ class TeacherForm extends Component
         'employee_id' => 'nullable|string|max:50',
         'type' => 'required|in:base,honorarios',
         'priority' => 'required|integer|min:0',
-        'max_weekly_hours' => 'nullable|integer|min:1',
+        'min_hours' => 'nullable|integer|min:0',
+        'max_hours' => 'nullable|integer|gte:min_hours',
         'department_id' => 'required|exists:departments,id',
     ];
 
@@ -35,7 +37,8 @@ class TeacherForm extends Component
             $this->employee_id = $teacher->employee_id;
             $this->type = $teacher->type;
             $this->priority = $teacher->priority;
-            $this->max_weekly_hours = $teacher->max_weekly_hours;
+            $this->min_hours = $teacher->min_hours;
+            $this->max_hours = $teacher->max_hours;
             $this->department_id = $teacher->department_id;
         }
     }
@@ -49,7 +52,8 @@ class TeacherForm extends Component
             'employee_id' => $this->employee_id,
             'type' => $this->type,
             'priority' => $this->priority,
-            'max_weekly_hours' => $this->max_weekly_hours,
+            'min_hours' => $this->min_hours,
+            'max_hours' => $this->max_hours,
             'department_id' => $this->department_id,
         ];
 

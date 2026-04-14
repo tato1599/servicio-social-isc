@@ -45,7 +45,9 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <p class="text-gray-800">{{ $course->teacher->name ?? 'Maestro por asignar' }}</p>
-                                    <p class="text-xs {{ $course->teacher->type === 'base' ? 'text-blue-500' : 'text-purple-500' }}">{{ ucfirst($course->teacher->type) }}</p>
+                                    @if($course->teacher)
+                                        <p class="text-xs {{ $course->teacher->type === 'base' ? 'text-blue-500' : 'text-purple-500' }}">{{ ucfirst($course->teacher->type) }}</p>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="px-2 py-1 rounded bg-gray-100 text-xs">Gp: {{ $course->group_code }}</span>

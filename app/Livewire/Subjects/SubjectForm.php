@@ -14,7 +14,7 @@ class SubjectForm extends Component
     public $code;
     public $name;
     public $semester;
-    public $weekly_hours = 4;
+    public $weekly_hours = 5;
     public $department_id;
 
     protected $rules = [
