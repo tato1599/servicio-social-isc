@@ -143,7 +143,7 @@
                             </td>
                             <td class="px-6 py-5">
                                 @if($schedules->first())
-                                    <span class="px-2 py-1 rounded bg-gray-100 text-gray-700 text-xs font-bold">{{ $schedules->first()->classroom->name }}</span>
+                                    <span class="px-2 py-1 rounded bg-gray-100 text-gray-700 text-xs font-bold">{{ $schedules->first()->classroom->name ?? 'Sin salón' }}</span>
                                 @else
                                     <span class="text-gray-400 text-xs italic">Sin aula</span>
                                 @endif

@@ -22,7 +22,7 @@
             </div>
 
             <div class="flex-1 overflow-auto p-4 custom-calendar-container" wire:ignore>
-                <div id="calendar"></div>
+                <div id="calendar" class="min-h-[600px] h-full"></div>
             </div>
         </main>
 
@@ -81,7 +81,6 @@
     </div>
 
     @push('styles')
-        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
         <style>
             .fc .fc-toolbar-title { font-size: 1.1rem !important; font-weight: 700; color: #111827; }
             .fc .fc-button-primary { background-color: #f3f4f6 !important; border-color: #e5e7eb !important; color: #374151 !important; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; }
@@ -96,32 +95,34 @@
     @endpush
 
     @push('scripts')
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
     <script>
-        document.addEventListener('livewire:navigated', function() {
+        function initCalendar() {
             var calendarEl = document.getElementById('calendar');
-            if (!calendarEl) return;
+            if (!calendarEl || calendarEl.children.length > 0) return;
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'timeGridWeek',
+                initialDate: '2024-08-19',
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
                     right: 'timeGridWeek,timeGridDay'
                 },
                 locale: 'es',
-                firstDay: 1, // Lunes
+                firstDay: 1,
                 allDaySlot: false,
                 slotMinTime: '07:00:00',
                 slotMaxTime: '21:00:00',
                 slotDuration: '01:00:00',
-                height: '100%',
+                height: 'parent',
                 events: @json($events),
                 eventContent: function(arg) {
                     let classroom = arg.event.extendedProps.classroom;
                     let subject = arg.event.extendedProps.subject;
                     return {
                         html: `
-                            <div class="flex flex-col h-full">
+                            <div class="flex flex-col h-full overflow-hidden">
                                 <p class="font-bold text-[10px] leading-tight truncate">${arg.event.title}</p>
                                 <p class="text-[9px] opacity-70 truncate">${subject}</p>
                                 <div class="mt-auto flex justify-between items-center bg-white/20 px-1 rounded">
@@ -133,7 +134,10 @@
                 }
             });
             calendar.render();
-        });
+        }
+
+        document.addEventListener('livewire:navigated', initCalendar);
+        document.addEventListener('DOMContentLoaded', initCalendar);
     </script>
     @endpush
 </div>

@@ -51,5 +51,19 @@ return [
             'active' => 'settings*',
             'can' => 'view-settings',
         ],
+        [
+            'title' => 'Carga Académica',
+            'icon' => 'table_chart',
+            'route' => 'admin.academic-load',
+            'active' => 'carga*',
+            'can' => 'view-dashboard',
+        ],
+        [
+            'title' => 'Importar Datos',
+            'icon' => 'upload_file',
+            'route' => 'admin.raw-import',
+            'active' => 'import*',
+            'can' => 'view-dashboard',
+        ],
     ],
 ];

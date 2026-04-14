@@ -44,7 +44,7 @@
                                     <p class="text-xs text-gray-500">{{ $course->subject->code }}</p>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <p class="text-gray-800">{{ $course->teacher->name }}</p>
+                                    <p class="text-gray-800">{{ $course->teacher->name ?? 'Maestro por asignar' }}</p>
                                     <p class="text-xs {{ $course->teacher->type === 'base' ? 'text-blue-500' : 'text-purple-500' }}">{{ ucfirst($course->teacher->type) }}</p>
                                 </td>
                                 <td class="px-6 py-4">

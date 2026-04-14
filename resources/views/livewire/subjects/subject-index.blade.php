@@ -141,7 +141,7 @@
                                                 <p class="text-sm font-bold text-gray-800">Grupo {{ $course->group_code }}</p>
                                                 <p class="text-xs text-gray-500 flex items-center gap-1">
                                                     <span class="material-symbols-outlined text-xs">person</span>
-                                                    {{ $course->teacher->name }}
+                                                    {{ $course->teacher->name ?? 'Sin asignar' }}
                                                 </p>
                                             </div>
                                             <span class="material-symbols-outlined text-gray-300 group-hover:text-primary transition-colors">arrow_forward</span>

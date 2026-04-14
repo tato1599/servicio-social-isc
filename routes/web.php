@@ -17,6 +17,8 @@ Route::middleware([
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     Route::post('/dashboard/generate', [App\Http\Controllers\DashboardController::class, 'generate'])->name('dashboard.generate');
     Route::post('/dashboard/generate-requirements', [App\Http\Controllers\DashboardController::class, 'generateFromRequirements'])->name('dashboard.generate-requirements');
+    Route::get('/import', \App\Livewire\Admin\RawImport::class)->name('admin.raw-import');
+    Route::get('/carga-academica', \App\Livewire\Admin\AcademicLoad::class)->name('admin.academic-load');
 
     // --- Módulo de Docentes ---
     Route::prefix('teachers')->group(function () {

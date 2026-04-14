@@ -33,13 +33,13 @@ class ScheduleCalendar extends Component
 
             return [
                 'id' => $s->id,
-                'title' => $s->course->subject->code . ' - ' . $s->course->teacher->name,
+                'title' => ($s->course->subject->code ?? '???') . ' - ' . ($s->course->teacher->name ?? 'Maestro Pendiente'),
                 'daysOfWeek' => [$s->day_of_week],
                 'startTime' => $s->start_time,
                 'endTime' => $s->end_time,
                 'extendedProps' => [
-                    'classroom' => $s->classroom->name,
-                    'subject' => $s->course->subject->name,
+                    'classroom' => $s->classroom->name ?? 'Sin salón',
+                    'subject' => $s->course->subject->name ?? 'Materia desconocida',
                 ],
                 'backgroundColor' => $color . '22', // 20% opacity
                 'borderColor' => $color,
