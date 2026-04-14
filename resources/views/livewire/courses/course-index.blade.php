@@ -9,7 +9,7 @@
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span class="material-symbols-outlined text-gray-400 text-xl">search</span>
                 </div>
-                <input type="text" wire:model.live="search" class="form-input block w-full pl-10 rounded-lg border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="Buscar por materia o profesor...">
+                <input type="text" wire:model.live="search" class="form-input block w-full pl-10 rounded-lg border-gray-200" placeholder="Buscar por materia o profesor...">
             </div>
             
             <a href="{{ route('courses.create') }}" class="flex items-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-medium hover:bg-primary/90 w-full sm:w-auto justify-center">
@@ -24,10 +24,10 @@
             </div>
         @endif
 
-        <div class="bg-white dark:bg-[#1A2836] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left">
-                    <thead class="text-xs text-gray-500 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-800/50">
+                    <thead class="text-xs text-gray-500 uppercase bg-gray-50">
                         <tr>
                             <th class="px-6 py-4">Materia</th>
                             <th class="px-6 py-4">Maestro</th>
@@ -36,19 +36,19 @@
                             <th class="px-6 py-4">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="divide-y divide-gray-200">
                         @forelse ($courses as $course)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                            <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-6 py-4">
-                                    <p class="font-bold text-gray-900 dark:text-white">{{ $course->subject->name }}</p>
+                                    <p class="font-bold text-gray-900">{{ $course->subject->name }}</p>
                                     <p class="text-xs text-gray-500">{{ $course->subject->code }}</p>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <p class="text-gray-800 dark:text-gray-300">{{ $course->teacher->name }}</p>
+                                    <p class="text-gray-800">{{ $course->teacher->name }}</p>
                                     <p class="text-xs {{ $course->teacher->type === 'base' ? 'text-blue-500' : 'text-purple-500' }}">{{ ucfirst($course->teacher->type) }}</p>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-xs">Gp: {{ $course->group_code }}</span>
+                                    <span class="px-2 py-1 rounded bg-gray-100 text-xs">Gp: {{ $course->group_code }}</span>
                                     <p class="text-[10px] text-gray-400 mt-1">{{ $course->period }}</p>
                                 </td>
                                 <td class="px-6 py-4">
@@ -87,7 +87,7 @@
                 </table>
             </div>
             @if($courses->hasPages())
-                <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="px-6 py-4 border-t border-gray-200">
                     {{ $courses->links() }}
                 </div>
             @endif

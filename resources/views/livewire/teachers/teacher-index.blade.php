@@ -10,7 +10,7 @@
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <span class="material-symbols-outlined text-gray-400 text-xl">search</span>
                 </div>
-                <input type="text" wire:model.live="search" class="form-input block w-full pl-10 rounded-lg border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="Buscar maestro...">
+                <input type="text" wire:model.live="search" class="form-input block w-full pl-10 rounded-lg border-gray-200" placeholder="Buscar maestro...">
             </div>
             
             <a href="{{ route('teachers.create') }}" class="flex items-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-medium hover:bg-primary/90 w-full sm:w-auto justify-center">
@@ -26,10 +26,10 @@
         @endif
 
         <!-- Listado de Maestros -->
-        <div class="bg-white dark:bg-[#1A2836] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left">
-                    <thead class="text-xs text-gray-500 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-800/50">
+                    <thead class="text-xs text-gray-500 uppercase bg-gray-50">
                         <tr>
                             <th class="px-6 py-4">ID / Empleado</th>
                             <th class="px-6 py-4">Nombre</th>
@@ -39,27 +39,27 @@
                             <th class="px-6 py-4">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="divide-y divide-gray-200">
                         @forelse ($teachers as $teacher)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4 font-medium text-gray-900">
                                     {{ $teacher->employee_id ?? 'N/A' }}
                                 </td>
-                                <td class="px-6 py-4 text-gray-700 dark:text-gray-300">
+                                <td class="px-6 py-4 text-gray-700">
                                     {{ $teacher->name }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                                         {{ $teacher->department->code ?? 'Sin Depto' }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="capitalize {{ $teacher->type === 'base' ? 'text-blue-600 dark:text-blue-400' : 'text-purple-600 dark:text-purple-400' }}">
+                                    <span class="capitalize {{ $teacher->type === 'base' ? 'text-blue-600' : 'text-purple-600' }}">
                                         {{ $teacher->type }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-xs">
+                                    <span class="px-2 py-1 rounded bg-gray-100 text-xs">
                                         {{ $teacher->priority }}
                                     </span>
                                 </td>
@@ -85,7 +85,7 @@
                 </table>
             </div>
             @if($teachers->hasPages())
-                <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="px-6 py-4 border-t border-gray-200">
                     {{ $teachers->links() }}
                 </div>
             @endif

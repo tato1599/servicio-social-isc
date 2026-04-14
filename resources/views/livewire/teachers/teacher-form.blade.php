@@ -4,19 +4,19 @@
     </x-slot>
 
     <div class="max-w-4xl">
-        <div class="bg-white dark:bg-[#1A2836] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <form wire:submit="save" class="p-6 flex flex-col gap-6">
                 <!-- Información Básica -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Nombre Completo</label>
-                        <input type="text" wire:model ="name" class="form-input rounded-lg border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="Ej: Dr. Juan Pérez">
+                        <label class="text-sm font-medium text-gray-700">Nombre Completo</label>
+                        <input type="text" wire:model ="name" class="form-input rounded-lg border-gray-200" placeholder="Ej: Dr. Juan Pérez">
                         @error('name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Número de Empleado / ID</label>
-                        <input type="text" wire:model ="employee_id" class="form-input rounded-lg border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="Ej: EMP-123">
+                        <label class="text-sm font-medium text-gray-700">Número de Empleado / ID</label>
+                        <input type="text" wire:model ="employee_id" class="form-input rounded-lg border-gray-200" placeholder="Ej: EMP-123">
                         @error('employee_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
                 </div>
@@ -24,8 +24,8 @@
                 <!-- Tipo y Departamento -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Departamento</label>
-                        <select wire:model ="department_id" class="form-select rounded-lg border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                        <label class="text-sm font-medium text-gray-700">Departamento</label>
+                        <select wire:model ="department_id" class="form-select rounded-lg border-gray-200">
                             <option value="">Seleccione un departamento</option>
                             @foreach($departments as $dept)
                                 <option value="{{ $dept->id }}">{{ $dept->name }} ({{ $dept->code }})</option>
@@ -35,15 +35,15 @@
                     </div>
 
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Tipo de Contrato</label>
+                        <label class="text-sm font-medium text-gray-700">Tipo de Contrato</label>
                         <div class="flex gap-4 mt-2">
                             <label class="inline-flex items-center">
                                 <input type="radio" wire:model ="type" value="base" class="form-radio text-primary">
-                                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Base</span>
+                                <span class="ml-2 text-sm text-gray-700">Base</span>
                             </label>
                             <label class="inline-flex items-center">
                                 <input type="radio" wire:model ="type" value="honorarios" class="form-radio text-primary">
-                                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Honorarios</span>
+                                <span class="ml-2 text-sm text-gray-700">Honorarios</span>
                             </label>
                         </div>
                         @error('type') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
@@ -51,24 +51,24 @@
                 </div>
 
                 <!-- Reglas de Horario -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-gray-50 rounded-lg">
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Prioridad Administrativa</label>
-                        <input type="number" wire:model ="priority" class="form-input rounded-lg border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="0 = Normal, 10 = Alta">
+                        <label class="text-sm font-medium text-gray-700">Prioridad Administrativa</label>
+                        <input type="number" wire:model ="priority" class="form-input rounded-lg border-gray-200" placeholder="0 = Normal, 10 = Alta">
                         <p class="text-xs text-gray-500">Valores altos resuelven conflictos a su favor.</p>
                         @error('priority') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
 
                     <div class="flex flex-col gap-2">
-                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Límite de Horas Semanales</label>
-                        <input type="number" wire:model ="max_weekly_hours" class="form-input rounded-lg border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white" placeholder="Ej: 40">
+                        <label class="text-sm font-medium text-gray-700">Límite de Horas Semanales</label>
+                        <input type="number" wire:model ="max_weekly_hours" class="form-input rounded-lg border-gray-200" placeholder="Ej: 40">
                         @error('max_weekly_hours') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
                 <!-- Acciones -->
-                <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <a href="{{ route('teachers.index') }}" class="flex items-center justify-center rounded-lg h-10 px-4 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 text-sm font-medium">
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+                    <a href="{{ route('teachers.index') }}" class="flex items-center justify-center rounded-lg h-10 px-4 bg-gray-100 text-gray-800 hover:bg-gray-200 text-sm font-medium">
                         Cancelar
                     </a>
                     <button type="submit" class="flex items-center justify-center gap-2 rounded-lg h-10 px-6 bg-primary text-white text-sm font-medium hover:bg-primary/90">

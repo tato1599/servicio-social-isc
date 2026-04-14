@@ -19,6 +19,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        \Illuminate\Support\Facades\Gate::define('view-dashboard', fn($user) => true);
+        \Illuminate\Support\Facades\Gate::define('view-teachers', fn($user) => true);
+        \Illuminate\Support\Facades\Gate::define('view-subjects', fn($user) => true);
+        \Illuminate\Support\Facades\Gate::define('view-courses', fn($user) => true);
+        \Illuminate\Support\Facades\Gate::define('view-social', fn($user) => true);
+        \Illuminate\Support\Facades\Gate::define('view-reports', fn($user) => true);
+        \Illuminate\Support\Facades\Gate::define('view-settings', fn($user) => true);
     }
 }
