@@ -12,11 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('teachers', function (Blueprint $table) {
-    $table->id();
-    $table->string('name');
-    $table->foreignId('department_id')->constrained('departments');
-    $table->timestamps();
-});
+            $table->id();
+            $table->string('name');
+            $table->string('employee_id')->unique()->nullable();
+            $table->enum('type', ['base', 'honorarios'])->default('base');
+            $table->integer('priority')->default(0);
+            $table->integer('max_weekly_hours')->nullable();
+            $table->foreignId('department_id')->constrained('departments');
+            $table->timestamps();
+        });
     }
 
     /**

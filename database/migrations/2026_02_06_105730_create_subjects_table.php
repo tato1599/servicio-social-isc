@@ -12,13 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('subjects', function (Blueprint $table) {
-    $table->id();
-    $table->string('code')->unique(); // 2EA
-    $table->string('name');
-    $table->integer('semester');
-    $table->foreignId('department_id')->constrained('departments');
-    $table->timestamps();
-});
+            $table->id();
+            $table->string('code')->unique(); // 2EA
+            $table->string('name');
+            $table->integer('semester');
+            $table->integer('weekly_hours')->default(4);
+            $table->foreignId('department_id')->constrained('departments');
+            $table->timestamps();
+        });
     }
 
     /**

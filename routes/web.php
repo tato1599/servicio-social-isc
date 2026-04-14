@@ -14,9 +14,7 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
     // --- Módulo de Docentes ---
     Route::prefix('teachers')->group(function () {
@@ -24,6 +22,20 @@ Route::middleware([
         Route::get('/create', TeacherForm::class)->name('teachers.create');
         Route::get('/{teacher}/edit', TeacherForm::class)->name('teachers.edit');
         Route::get('/{teacher}', TeacherShow::class)->name('teachers.show');
+    });
+
+    // --- Módulo de Materias ---
+    Route::prefix('subjects')->group(function () {
+        Route::get('/', \App\Livewire\Subjects\SubjectIndex::class)->name('subjects.index');
+        Route::get('/create', \App\Livewire\Subjects\SubjectForm::class)->name('subjects.create');
+        Route::get('/{subject}/edit', \App\Livewire\Subjects\SubjectForm::class)->name('subjects.edit');
+    });
+
+    // --- Módulo de Horarios (Asignaciones) ---
+    Route::prefix('courses')->group(function () {
+        Route::get('/', \App\Livewire\Courses\CourseIndex::class)->name('courses.index');
+        Route::get('/create', \App\Livewire\Courses\CourseForm::class)->name('courses.create');
+        Route::get('/{course}/edit', \App\Livewire\Courses\CourseForm::class)->name('courses.edit');
     });
 
 });
