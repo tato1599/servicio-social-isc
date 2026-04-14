@@ -10,8 +10,8 @@ return [
             'can' => 'view-dashboard',
         ],
         [
-            'title' => 'Horarios',
-            'icon' => 'calendar_month',
+            'title' => 'Calendario de Clases',
+            'icon' => 'event',
             'route' => 'courses.index',
             'active' => 'courses*',
             'can' => 'view-courses',

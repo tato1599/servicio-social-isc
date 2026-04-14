@@ -34,7 +34,7 @@ Route::middleware([
 
     // --- Módulo de Horarios (Asignaciones) ---
     Route::prefix('courses')->group(function () {
-        Route::get('/', \App\Livewire\Courses\CourseIndex::class)->name('courses.index');
+        Route::get('/', \App\Livewire\Courses\ScheduleCalendar::class)->name('courses.index');
         Route::get('/create', \App\Livewire\Courses\CourseForm::class)->name('courses.create');
         Route::get('/{course}/edit', \App\Livewire\Courses\CourseForm::class)->name('courses.edit');
     });

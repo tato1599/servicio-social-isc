@@ -19,8 +19,8 @@ export default {
                 "background-dark": "#101922",
             },
             fontFamily: {
-                sans: ['Inter', ...defaultTheme.fontFamily.sans],
-                display: ['Inter', 'sans-serif'],
+                sans: ['Lexend', ...defaultTheme.fontFamily.sans],
+                display: ['Lexend', 'sans-serif'],
             },
         },
     },

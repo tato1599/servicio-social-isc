@@ -95,4 +95,61 @@ class ScheduleService
 
         return null;
     }
+
+    public function detectConflicts($period = 'Aug-Dec 2026')
+    {
+        $conflicts = [];
+        $schedules = Schedule::with(['course.teacher', 'course.subject', 'classroom'])
+            ->whereHas('course', fn($q) => $q->where('period', $period))
+            ->get();
+
+        foreach ($schedules as $s1) {
+            foreach ($schedules as $s2) {
+                if ($s1->id === $s2->id) continue;
+
+                // Mismo día
+                if ($s1->day_of_week === $s2->day_of_week) {
+                    // Solape de tiempo
+                    $overlap = ($s1->start_time < $s2->end_time && $s1->end_time > $s2->start_time);
+
+                    if ($overlap) {
+                        // Conflicto de Maestro
+                        if ($s1->course->teacher_id === $s2->course->teacher_id) {
+                            $conflicts[] = [
+                                'type' => 'teacher',
+                                'title' => 'Conflicto de Maestro',
+                                'name' => $s1->course->teacher->name,
+                                'description' => "Asignado a dos clases al mismo tiempo.",
+                                'items' => [
+                                    "{$s1->course->subject->code}: {$s1->start_time} - {$s1->end_time}",
+                                    "{$s2->course->subject->code}: {$s2->start_time} - {$s2->end_time}",
+                                ],
+                                'schedule_ids' => [$s1->id, $s2->id]
+                            ];
+                        }
+                        // Conflicto de Salón
+                        if ($s1->classroom_id === $s2->classroom_id) {
+                            $conflicts[] = [
+                                'type' => 'classroom',
+                                'title' => 'Conflicto de Salón',
+                                'name' => $s1->classroom->name,
+                                'description' => "Reservado para dos clases al mismo tiempo.",
+                                'items' => [
+                                    "{$s1->course->subject->code} ({$s1->course->teacher->name})",
+                                    "{$s2->course->subject->code} ({$s2->course->teacher->name})",
+                                ],
+                                'schedule_ids' => [$s1->id, $s2->id]
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        // Eliminar duplicados simples (esto es una demo, la lógica real sería más compleja)
+        return collect($conflicts)->unique(function ($item) {
+            sort($item['schedule_ids']);
+            return $item['type'] . implode('-', $item['schedule_ids']);
+        })->values()->all();
+    }
 }
