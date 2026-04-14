@@ -11,6 +11,8 @@ class Course extends Model
         'teacher_id',
         'group_code',
         'period',
+        'requirement_slot',
+        'requirement_classroom_id',
     ];
 
     public function subject()

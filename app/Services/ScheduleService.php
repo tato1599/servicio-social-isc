@@ -96,7 +96,64 @@ class ScheduleService
         return null;
     }
 
-    public function detectConflicts($period = 'Aug-Dec 2026')
+    public function generateFromRequirements($period = 'Aug-Dec 2024')
+    {
+        $courses = Course::where('period', $period)
+            ->whereNotNull('requirement_slot')
+            ->get();
+
+        $slotMap = [
+            'A' => '07:00:00', 'B' => '08:00:00', 'C' => '09:00:00', 
+            'D' => '10:00:00', 'E' => '11:00:00', 'F' => '12:00:00',
+            'G' => '13:00:00', 'H' => '14:00:00', 'I' => '15:00:00',
+            'J' => '16:00:00', 'K' => '17:00:00', 'L' => '18:00:00',
+            'M' => '19:00:00', 'N' => '20:00:00', 'O' => '21:00:00'
+        ];
+
+        $assignedCount = 0;
+
+        foreach ($courses as $course) {
+            $slots = explode(',', $course->requirement_slot);
+            $hoursAssigned = 0;
+            $hoursNeeded = $course->subject->weekly_hours;
+
+            // Intentar asignar los slots recomendados en los 5 días de la semana
+            // (Esta es una simplificación: si dice 'B', intentamos poner 1 hora B cada día hasta completar)
+            foreach ($slots as $slot) {
+                if (!isset($slotMap[$slot])) continue;
+
+                $startTime = $slotMap[$slot];
+                $endTime = date('H:i:s', strtotime($startTime) + 3600);
+
+                for ($day = 1; $day <= 5 && $hoursAssigned < $hoursNeeded; $day++) {
+                    // Verificar si ya hay algo en ese salón/hora/día
+                    $isOccupied = Schedule::where('day_of_week', $day)
+                        ->where('start_time', $startTime)
+                        ->where(function($q) use ($course) {
+                            $q->where('classroom_id', $course->requirement_classroom_id)
+                              ->orWhereHas('course', fn($sq) => $sq->where('teacher_id', $course->teacher_id));
+                        })
+                        ->exists();
+
+                    if (!$isOccupied) {
+                        Schedule::create([
+                            'course_id' => $course->id,
+                            'classroom_id' => $course->requirement_classroom_id ?? Classroom::first()->id,
+                            'day_of_week' => $day,
+                            'start_time' => $startTime,
+                            'end_time' => $endTime,
+                        ]);
+                        $hoursAssigned++;
+                        $assignedCount++;
+                    }
+                }
+            }
+        }
+
+        return $assignedCount;
+    }
+
+    public function detectConflicts($period = 'Aug-Dec 2024')
     {
         $conflicts = [];
         $schedules = Schedule::with(['course.teacher', 'course.subject', 'classroom'])

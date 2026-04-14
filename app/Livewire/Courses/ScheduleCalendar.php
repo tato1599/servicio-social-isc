@@ -9,7 +9,7 @@ class ScheduleCalendar extends Component
 {
     public $events = [];
     public $conflicts = [];
-    public $period = 'Aug-Dec 2026';
+    public $period = 'Aug-Dec 2024';
 
     public function mount(\App\Services\ScheduleService $service)
     {

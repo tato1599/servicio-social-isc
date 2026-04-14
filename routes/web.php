@@ -16,6 +16,7 @@ Route::middleware([
 ])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     Route::post('/dashboard/generate', [App\Http\Controllers\DashboardController::class, 'generate'])->name('dashboard.generate');
+    Route::post('/dashboard/generate-requirements', [App\Http\Controllers\DashboardController::class, 'generateFromRequirements'])->name('dashboard.generate-requirements');
 
     // --- Módulo de Docentes ---
     Route::prefix('teachers')->group(function () {
