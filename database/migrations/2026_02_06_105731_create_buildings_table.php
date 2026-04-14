@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('buildings', function (Blueprint $table) {
     $table->id();
     $table->string('name'); // Edificio 700
+    $table->string('code')->unique(); // 700
     $table->timestamps();
 });
     }

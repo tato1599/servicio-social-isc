@@ -83,7 +83,9 @@
                     <button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 w-10 bg-gray-100 text-gray-700 hover:bg-gray-200">
                         <span class="material-symbols-outlined">notifications</span>
                     </button>
-                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style="background-image: url('{{ auth()->user()->profile_photo_url }}');"></div>
+                    <a href="{{ route('profile.show') }}" class="group">
+                        <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-transparent group-hover:border-primary transition-all" style="background-image: url('{{ auth()->user()->profile_photo_url }}');"></div>
+                    </a>
                 </div>
             </header>
 

@@ -20,4 +20,11 @@ class DashboardController extends Controller
 
         return view('dashboard', compact('stats'));
     }
+
+    public function generate(Request $request, \App\Services\ScheduleService $service)
+    {
+        $count = $service->generateAutomaticSchedules();
+        
+        return back()->with('message', "¡Éxito! Se han generado {$count} asignaciones de horario automáticamente.");
+    }
 }

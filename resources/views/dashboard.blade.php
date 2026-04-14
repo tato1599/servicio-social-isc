@@ -23,6 +23,26 @@
         </div>
     </div>
 
+    @if (session()->has('message'))
+        <div class="mt-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
+            {{ session('message') }}
+        </div>
+    @endif
+
+    <div class="mt-6 bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex flex-col">
+            <h3 class="text-gray-900 text-lg font-bold leading-tight">Configuración de Horarios</h3>
+            <p class="text-gray-500 text-sm">Ejecuta la asignación automática basada en prioridades.</p>
+        </div>
+        <form action="{{ route('dashboard.generate') }}" method="POST">
+            @csrf
+            <button type="submit" class="flex items-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-medium hover:bg-primary/90">
+                <span class="material-symbols-outlined text-xl">bolt</span>
+                Generar Horarios
+            </button>
+        </form>
+    </div>
+
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-6">
         <div class="xl:col-span-2 flex flex-col gap-6">
             <!-- Conflict Section -->

@@ -15,6 +15,7 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/dashboard/generate', [App\Http\Controllers\DashboardController::class, 'generate'])->name('dashboard.generate');
 
     // --- Módulo de Docentes ---
     Route::prefix('teachers')->group(function () {
