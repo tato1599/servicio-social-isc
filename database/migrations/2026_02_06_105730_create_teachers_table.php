@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('employee_id')->unique()->nullable();
             $table->enum('type', ['base', 'honorarios'])->default('base');
             $table->integer('priority')->default(0);
-            $table->integer('max_weekly_hours')->nullable();
+            $table->integer('min_hours')->default(0);
+            $table->integer('max_hours')->default(40);
             $table->foreignId('department_id')->constrained('departments');
             $table->timestamps();
         });

@@ -12,13 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('courses', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('subject_id')->constrained('subjects');
-    $table->foreignId('teacher_id')->constrained('teachers');
-    $table->string('group_code'); // 'A'
-    $table->string('period'); // 'Aug-Dec 2026'
-    $table->timestamps();
-});
+            $table->id();
+            $table->foreignId('subject_id')->constrained('subjects');
+            $table->foreignId('teacher_id')->nullable()->constrained('teachers');
+            $table->string('group_code'); // 'A'
+            $table->string('period'); // 'Aug-Dec 2026'
+            $table->integer('students_count')->default(0);
+            $table->string('possible_slots')->nullable();
+            $table->string('final_slot')->nullable();
+            $table->string('status')->default('draft');
+            $table->timestamps();
+        });
     }
 
     /**

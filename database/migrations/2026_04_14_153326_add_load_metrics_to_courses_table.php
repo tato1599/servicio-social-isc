@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::table('courses', function (Blueprint $table) {
             $table->string('study_plan')->nullable();
-            $table->integer('students_count')->default(0);
             $table->integer('students_count_adjusted')->default(0);
             $table->integer('groups_count')->default(1);
         });
@@ -25,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('courses', function (Blueprint $table) {
-            $table->dropColumn(['study_plan', 'students_count', 'students_count_adjusted', 'groups_count']);
+            $table->dropColumn(['study_plan', 'students_count_adjusted', 'groups_count']);
         });
     }
 };

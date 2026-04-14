@@ -6,7 +6,7 @@ use App\Livewire\Teachers\TeacherShow;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('dashboard');
 });
 
 Route::middleware([
@@ -17,7 +17,7 @@ Route::middleware([
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     Route::post('/dashboard/generate', [App\Http\Controllers\DashboardController::class, 'generate'])->name('dashboard.generate');
     Route::post('/dashboard/generate-requirements', [App\Http\Controllers\DashboardController::class, 'generateFromRequirements'])->name('dashboard.generate-requirements');
-    Route::get('/import', \App\Livewire\Admin\RawImport::class)->name('admin.raw-import');
+    Route::get('/import', \App\Livewire\Admin\ScheduleWizard::class)->name('admin.raw-import');
     Route::get('/carga-academica', \App\Livewire\Admin\AcademicLoad::class)->name('admin.academic-load');
     Route::get('/matriz', \App\Livewire\Admin\ScheduleMatrix::class)->name('admin.schedule-matrix');
 
@@ -42,5 +42,4 @@ Route::middleware([
         Route::get('/create', \App\Livewire\Courses\CourseForm::class)->name('courses.create');
         Route::get('/{course}/edit', \App\Livewire\Courses\CourseForm::class)->name('courses.edit');
     });
-
 });

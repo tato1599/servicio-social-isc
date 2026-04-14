@@ -3,27 +3,37 @@
 namespace App\Livewire\Admin;
 
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use App\Models\Department;
 use App\Models\Teacher;
 use App\Models\Subject;
 use App\Models\Classroom;
 use App\Models\Course;
 use App\Services\ScheduleService;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 
 class RawImport extends Component
 {
-    public $rawData = '';
+    use WithFileUploads;
+
+    public $file; // Archivo CSV
     public $message = '';
-    public $period = 'Aug-Dec 2024';
+    public $period = '';
     public $recentCourses = [];
     public $previewData = [];
 
     public function mount()
     {
         $this->loadRecentCourses();
+        if (now()->month >= 1 && now()->month <= 7) {
+            $this->period = 'Ene-Jun ' . now()->year;
+        } else {
+            $this->period = 'Ago-Dic ' . now()->year;
+        }
     }
 
+    #[Computed()]
     public function loadRecentCourses()
     {
         $this->recentCourses = Course::with(['subject', 'teacher', 'requirementClassroom'])
@@ -33,102 +43,84 @@ class RawImport extends Component
             ->get();
     }
 
-    /**
-     * Parse a single line of text into a structured data array.
-     */
-    protected function parseLine($line)
+    // Se ejecuta automáticamente al seleccionar un archivo
+    public function updatedFile()
     {
-        $line = trim($line);
-        if (empty($line) || strlen($line) < 10) return null;
-
-        // Heurística de detección por columnas
-        if (preg_match('/^(\d)\s+([A-Z\s\.ÁÉÍÓÚÑ0-9\(\)´]+?)\s+([A-Z0-9]{3,7})\s+/u', $line, $matches)) {
-            $semester = $matches[1];
-            $name = trim($matches[2]);
-            $code = $matches[3];
-            $remaining = substr($line, strlen($matches[0]));
-
-            // Extraer Métricas (Alumnos, Ajuste, Grupos)
-            $metrics = [];
-            if (preg_match_all('/\b(\d{1,3})\b/', $remaining, $numMatches)) {
-                $metrics = $numMatches[1];
-            }
-
-            $students = $metrics[0] ?? 0;
-            $adjusted = $metrics[1] ?? 0;
-            $groupsCnt = $metrics[2] ?? 1;
-
-            // Extraer Slot (Letra A-O sola)
-            $slot = null;
-            if (preg_match('/\b([A-O])\b/', $remaining, $slotMatch)) {
-                $slot = $slotMatch[1];
-            }
-
-            // Extraer Salón (70X, 10X, 40X, etc)
-            $roomName = null;
-            if (preg_match('/\b(70[0-9]|1[0-9]{2}|40[0-9]|SALA|LAB|AULA|132|134|136|135|238|404|106)\b/i', $remaining, $roomMatch)) {
-                $roomName = $roomMatch[0];
-            }
-
-            // Extraer Maestro
-            $teacherName = null;
-            if (preg_match('/\s+([A-ZÁÉÍÓÚÑ]{3,}\s+[A-ZÁÉÍÓÚÑ]{3,}.*)$/u', $line, $teacherMatch)) {
-                $teacherName = trim($teacherMatch[1]);
-                $teacherName = preg_replace('/(CANCELADO|REVISAR|VER|MATERIAS).*/i', '', $teacherName);
-                $teacherName = trim($teacherName);
-                if (strlen($teacherName) < 5) $teacherName = null;
-            }
-
-            return [
-                'semester' => $semester,
-                'subject_name' => $name,
-                'subject_code' => $code,
-                'students' => $students,
-                'adjusted' => $adjusted,
-                'groups' => $groupsCnt,
-                'slot' => $slot,
-                'room' => $roomName,
-                'teacher' => $teacherName,
-                'valid' => true
-            ];
-        }
-
-        return null;
+        $this->generatePreview();
     }
 
     public function generatePreview()
     {
+        $this->validate([
+            'file' => 'required|mimes:csv,txt|max:2048', // Validación del archivo
+        ]);
+
         $this->previewData = [];
-        $lines = explode("\n", trim($this->rawData));
-        
-        foreach ($lines as $line) {
-            $parsed = $this->parseLine($line);
-            if ($parsed) {
-                $this->previewData[] = $parsed;
+        $filePath = $this->file->getRealPath();
+
+        if (($handle = fopen($filePath, 'r')) !== false) {
+            // Leer la primera fila (encabezados) y omitirla
+            $headers = fgetcsv($handle, 1000, ',');
+
+            while (($row = fgetcsv($handle, 1000, ',')) !== false) {
+                // Validar que la fila no esté vacía y tenga al menos la columna de Materia y Clave
+                if (empty($row[1]) || empty($row[2])) {
+                    continue;
+                }
+
+                // Extraer slots de horarios (Columnas 6 a 10)
+                $slots = [];
+                for ($i = 6; $i <= 10; $i++) {
+                    if (isset($row[$i]) && trim($row[$i]) !== '') {
+                        // Por si hay espacios dentro de la misma celda como "D     B"
+                        $cellSlots = preg_split('/\s+/', trim($row[$i]));
+                        foreach ($cellSlots as $s) {
+                            if (!empty($s)) {
+                                $slots[] = $s;
+                            }
+                        }
+                    }
+                }
+
+                $this->previewData[] = [
+                    'semester'     => trim($row[0] ?? ''),
+                    'subject_name' => trim($row[1] ?? ''),
+                    'subject_code' => trim($row[2] ?? ''),
+                    'students'     => is_numeric($row[3]) ? (int)$row[3] : 0,
+                    'adjusted'     => is_numeric($row[4]) ? (float)$row[4] : 0,
+                    'groups'       => is_numeric($row[5]) ? (int)$row[5] : 0,
+                    'slot'         => !empty($slots) ? implode(', ', array_unique($slots)) : 'N/A',
+                    'room'         => null, // No viene en el CSV actual
+                    'teacher'      => null, // No viene en el CSV actual
+                    'valid'        => true
+                ];
             }
+            fclose($handle);
         }
-        
-        $this->message = "Se generó la vista previa de " . count($this->previewData) . " materias.";
+
+        $this->message = "Se generó la vista previa de " . count($this->previewData) . " materias desde el CSV.";
     }
 
-    public function import(\App\Services\ScheduleService $service)
+    public function import(ScheduleService $service)
     {
         if (empty($this->previewData)) {
-            $this->generatePreview();
+            $this->addError('file', 'No hay datos validados para importar.');
+            return;
         }
 
         $importedCount = 0;
         $deptISC = Department::firstOrCreate(['name' => 'Ingeniería en Sistemas Computacionales'], ['code' => 'ISC']);
 
         foreach ($this->previewData as $data) {
-            // Crear Entidades
+            // Crear Entidad Materia
             $subject = Subject::updateOrCreate(
                 ['code' => $data['subject_code']],
                 ['name' => $data['subject_name'], 'semester' => $data['semester'], 'weekly_hours' => 5, 'department_id' => $deptISC->id]
             );
 
+            // Mantenemos la lógica de profesores/salón por si en el futuro los incluyes en el CSV
             $teacherId = null;
-            if ($data['teacher']) {
+            if (!empty($data['teacher'])) {
                 $teacher = Teacher::firstOrCreate(
                     ['name' => $data['teacher']],
                     ['employee_id' => 'EMP-' . rand(1000, 9999), 'department_id' => $deptISC->id]
@@ -137,7 +129,7 @@ class RawImport extends Component
             }
 
             $roomId = null;
-            if ($data['room']) {
+            if (!empty($data['room'])) {
                 $classroom = Classroom::firstOrCreate(['name' => $data['room']], ['building_id' => 1]);
                 $roomId = $classroom->id;
             }
@@ -145,8 +137,8 @@ class RawImport extends Component
             // Crear Curso
             Course::updateOrCreate(
                 [
-                    'subject_id' => $subject->id, 
-                    'period' => $this->period, 
+                    'subject_id' => $subject->id,
+                    'period' => $this->period,
                     'requirement_slot' => $data['slot'],
                     'teacher_id' => $teacherId
                 ],
@@ -168,7 +160,7 @@ class RawImport extends Component
         $this->previewData = [];
 
         $this->message = "¡Éxito! Se importaron definitivamente $importedCount registros.";
-        $this->rawData = '';
+        $this->reset('file'); // Limpiamos el input file
     }
 
     #[Layout('layouts.dashboard')]

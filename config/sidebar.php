@@ -31,13 +31,6 @@ return [
             'can' => 'view-subjects',
         ],
         [
-            'title' => 'Servicio Social',
-            'icon' => 'work',
-            'route' => '#',
-            'active' => 'social*',
-            'can' => 'view-social',
-        ],
-        [
             'title' => 'Reportes',
             'icon' => 'bar_chart',
             'route' => '#',

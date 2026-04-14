@@ -11,7 +11,8 @@ class Teacher extends Model
         'employee_id',
         'type',
         'priority',
-        'max_weekly_hours',
+        'min_hours',
+        'max_hours',
         'department_id',
     ];
 

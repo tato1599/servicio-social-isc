@@ -11,10 +11,12 @@ class Course extends Model
         'teacher_id',
         'group_code',
         'period',
+        'possible_slots',
+        'final_slot',
+        'status',
         'requirement_slot',
         'requirement_classroom_id',
         'study_plan',
-        'students_count',
         'students_count_adjusted',
         'groups_count',
     ];

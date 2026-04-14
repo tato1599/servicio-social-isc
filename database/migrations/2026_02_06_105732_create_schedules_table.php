@@ -14,7 +14,7 @@ return new class extends Migration
        Schema::create('schedules', function (Blueprint $table) {
     $table->id();
     $table->foreignId('course_id')->constrained('courses')->onDelete('cascade');
-    $table->foreignId('classroom_id')->constrained('classrooms');
+    $table->foreignId('classroom_id')->nullable()->constrained('classrooms');
     $table->integer('day_of_week'); // 1: Mon, 6: Sat
     $table->time('start_time');
     $table->time('end_time');

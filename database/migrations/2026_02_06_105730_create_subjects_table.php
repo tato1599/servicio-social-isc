@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('code')->unique(); // 2EA
             $table->string('name');
             $table->integer('semester');
-            $table->integer('weekly_hours')->default(4);
+            $table->integer('weekly_hours')->default(5);
             $table->foreignId('department_id')->constrained('departments');
             $table->timestamps();
         });

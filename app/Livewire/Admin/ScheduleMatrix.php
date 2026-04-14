@@ -13,8 +13,8 @@ class ScheduleMatrix extends Component
     public $dayOfWeek = 1; // Lunes por defecto
     public $matrix = [];
     public $classrooms = [];
-    
-    public $slots = [
+
+    public $timeSlots = [
         'A' => '07:00 - 08:00',
         'B' => '08:00 - 09:00',
         'C' => '09:00 - 10:00',
@@ -40,7 +40,7 @@ class ScheduleMatrix extends Component
     public function loadData()
     {
         $this->classrooms = Classroom::orderBy('name')->get();
-        
+
         $schedules = Schedule::with(['course.subject', 'course.teacher'])
             ->where('day_of_week', $this->dayOfWeek)
             ->whereHas('course', fn($q) => $q->where('period', $this->period))
@@ -58,7 +58,7 @@ class ScheduleMatrix extends Component
         foreach ($schedules as $s) {
             $startTime = substr($s->start_time, 0, 5);
             $letter = array_search($startTime . ' - ' . date('H:i', strtotime($startTime) + 3600), $this->slots);
-            
+
             if ($letter) {
                 $this->matrix[$letter][$s->classroom_id] = [
                     'id' => $s->id,
@@ -91,7 +91,7 @@ class ScheduleMatrix extends Component
             8 => 'bg-orange-100 border-orange-200 text-orange-700',
             9 => 'bg-pink-100 border-pink-200 text-pink-700',
         ];
-        
+
         return $colors[$semester] ?? 'bg-gray-100 border-gray-200 text-gray-700';
     }
 
