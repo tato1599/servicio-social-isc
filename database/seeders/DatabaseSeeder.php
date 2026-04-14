@@ -34,20 +34,16 @@ class DatabaseSeeder extends Seeder
             $user->save();
         }
 
-        // 2. Ejecutar seeders de entidades
+        // 2. Ejecutar seeders de infraestructura básica
         $this->call([
-            DepartmentSeeder::class,
+                // DepartmentSeeder::class,
             BuildingSeeder::class,
             ClassroomSeeder::class,
-            SubjectSeeder::class,
-            TeacherSeeder::class,
-            CourseSeeder::class,
+            // SubjectSeeder::class,
+            // TeacherSeeder::class,
+            // CourseSeeder::class,
         ]);
 
-        // 3. Ejecutar Generación Automática de Horarios
-        $scheduleService = new ScheduleService();
-        $totalAssigned = $scheduleService->generateAutomaticSchedules();
-
-        $this->command->info("Se han asignado automáticamente {$totalAssigned} espacios de horario.");
+        $this->command->info("Sistema limpio y listo para importación real de datos.");
     }
 }

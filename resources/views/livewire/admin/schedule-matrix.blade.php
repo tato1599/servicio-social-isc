@@ -75,9 +75,7 @@
                                                 </div>
                                             </div>
                                         @else
-                                            <div class="h-full min-h-[80px] flex items-center justify-center opacity-5 group">
-                                                <span class="material-symbols-outlined text-gray-300 group-hover:scale-110 transition-transform">add_circle</span>
-                                            </div>
+                                            <div class="h-full min-h-[80px] bg-gray-50/20"></div>
                                         @endif
                                     </td>
                                 @endforeach

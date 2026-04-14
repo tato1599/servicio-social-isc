@@ -33,4 +33,9 @@ class Course extends Model
     {
         return $this->hasMany(Schedule::class);
     }
+
+    public function requirementClassroom()
+    {
+        return $this->belongsTo(Classroom::class, 'requirement_classroom_id');
+    }
 }
