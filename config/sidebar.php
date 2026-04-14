@@ -52,6 +52,13 @@ return [
             'can' => 'view-settings',
         ],
         [
+            'title' => 'Matriz de Horarios',
+            'icon' => 'grid_view',
+            'route' => 'admin.schedule-matrix',
+            'active' => 'matriz*',
+            'can' => 'view-dashboard',
+        ],
+        [
             'title' => 'Carga Académica',
             'icon' => 'table_chart',
             'route' => 'admin.academic-load',
