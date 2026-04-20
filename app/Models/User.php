@@ -31,6 +31,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'department_id',
+        'role',
     ];
 
     /**
@@ -53,6 +55,16 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
 
     /**
      * Get the attributes that should be cast.

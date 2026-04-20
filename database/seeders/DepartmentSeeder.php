@@ -15,10 +15,11 @@ class DepartmentSeeder extends Seeder
             ['name' => 'Contaduría Pública', 'code' => 'CP'],
             ['name' => 'Arquitectura', 'code' => 'ARQ'],
             ['name' => 'Ciencias Básicas', 'code' => 'CB'],
+            ['name' => 'Ingeniería Electromecánica', 'code' => 'IE'],
         ];
 
         foreach ($departments as $dept) {
-            Department::create($dept);
+            Department::updateOrCreate(['code' => $dept['code']], $dept);
         }
     }
 }

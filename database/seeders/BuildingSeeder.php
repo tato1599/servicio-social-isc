@@ -17,7 +17,7 @@ class BuildingSeeder extends Seeder
         ];
 
         foreach ($buildings as $b) {
-            Building::create($b);
+            Building::updateOrCreate(['code' => $b['code']], $b);
         }
     }
 }

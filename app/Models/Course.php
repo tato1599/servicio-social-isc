@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToDepartment;
 use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
 {
+    use BelongsToDepartment;
+
     protected $fillable = [
         'subject_id',
         'teacher_id',
@@ -20,6 +23,7 @@ class Course extends Model
         'students_count',
         'students_count_adjusted',
         'groups_count',
+        'department_id',
     ];
 
     public function subject()

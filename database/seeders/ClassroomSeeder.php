@@ -16,19 +16,18 @@ class ClassroomSeeder extends Seeder
             if ($b->code === '700' || $b->code === '800') {
                 // Crear 5 salones por edificio
                 for ($i = 1; $i <= 5; $i++) {
-                    Classroom::create([
-                        'name' => "Salón " . $b->code . "-" . $i,
-                        'capacity' => 40,
-                        'building_id' => $b->id,
-                    ]);
+                    Classroom::updateOrCreate(
+                        ['name' => "Salón " . $b->code . "-" . $i, 'building_id' => $b->id],
+                        ['capacity' => 40]
+                    );
                 }
             } elseif ($b->code === 'CC') {
-                Classroom::create(['name' => 'Lab Cómputo A', 'capacity' => 30, 'building_id' => $b->id]);
-                Classroom::create(['name' => 'Lab Cómputo B', 'capacity' => 30, 'building_id' => $b->id]);
-                Classroom::create(['name' => 'Lab Redes', 'capacity' => 20, 'building_id' => $b->id]);
+                Classroom::updateOrCreate(['name' => 'Lab Cómputo A', 'building_id' => $b->id], ['capacity' => 30]);
+                Classroom::updateOrCreate(['name' => 'Lab Cómputo B', 'building_id' => $b->id], ['capacity' => 30]);
+                Classroom::updateOrCreate(['name' => 'Lab Redes', 'building_id' => $b->id], ['capacity' => 20]);
             } elseif ($b->code === 'LP') {
-                Classroom::create(['name' => 'Lab Química', 'capacity' => 25, 'building_id' => $b->id]);
-                Classroom::create(['name' => 'Taller Electrónica', 'capacity' => 25, 'building_id' => $b->id]);
+                Classroom::updateOrCreate(['name' => 'Lab Química', 'building_id' => $b->id], ['capacity' => 25]);
+                Classroom::updateOrCreate(['name' => 'Taller Electrónica', 'building_id' => $b->id], ['capacity' => 25]);
             }
         }
     }

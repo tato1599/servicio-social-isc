@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToDepartment;
 use Illuminate\Database\Eloquent\Model;
 
 class Subject extends Model
 {
+    use BelongsToDepartment;
+
     protected $fillable = [
         'code',
         'name',
@@ -14,8 +17,4 @@ class Subject extends Model
         'department_id',
     ];
 
-    public function department()
-    {
-        return $this->belongsTo(Department::class);
-    }
 }
